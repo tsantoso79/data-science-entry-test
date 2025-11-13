@@ -932,39 +932,52 @@ void DisplayComment(int rates_total,
 
    lastDisplayTime = nowTime;
 
-   string Dcomment = "\n===================== " + TimeToString(time[0], TIME_DATE|TIME_MINUTES|TIME_SECONDS) + "\n";
-   Dcomment += StringFormat(
-      "       max_Hist_bars : %d       rates_total : %d       prev_calculated : %d       first_last : %d       last : %d       starti : %d       sum_piecewise : %s       displacement : %s       depth : %s       High0 : %s       Low0 : %s       Close0 : %s\n",
+   string Dcomment = StringFormat("\n===================== %s\n", TimeToString(time[0], TIME_DATE|TIME_MINUTES|TIME_SECONDS));
+
+   string metricsLine = StringFormat("       max_Hist_bars : %d       rates_total : %d       prev_calculated : %d\n",
       max_Hist_bars,
       rates_total,
-      prev_calculated_print,
+      prev_calculated_print
+      );
+   metricsLine += StringFormat("       first_last : %d       last : %d       starti : %d\n",
       first_last,
       last,
-      starti,
+      starti
+      );
+   metricsLine += StringFormat("       sum_piecewise : %s       displacement : %s       depth : %s\n",
       DoubleToString(metrics.sum_piecewise, 0),
       DoubleToString(metrics.displacement, 0),
-      DoubleToString(depth/_Point, 0),
+      DoubleToString(depth/_Point, 0)
+      );
+   metricsLine += StringFormat("       High0 : %s       Low0 : %s       Close0 : %s\n",
       DoubleToString(high[0], _Digits),
       DoubleToString(low[0], _Digits),
       DoubleToString(close[0], _Digits)
       );
-   Dcomment += StringFormat(
-      "       first_segmt : %s       updwn_2hr_ratio : %s       updwn_4hr_ratio : %s       updwn_8hr_ratio : %s       updwn_24hr_ratio : %s       Max_N : %d       N_Buffer : %d       DD_Ratio : %s       DN_Ratio : %s\n",
+   Dcomment += metricsLine;
+
+   string ratiosLine = StringFormat("       first_segmt : %s       updwn_2hr_ratio : %s       updwn_4hr_ratio : %s\n",
       DoubleToString(metrics.first_segment, 2),
       DoubleToString(metrics.updwn_2hr_ratio, 2),
-      DoubleToString(metrics.updwn_4hr_ratio, 2),
+      DoubleToString(metrics.updwn_4hr_ratio, 2)
+      );
+   ratiosLine += StringFormat("       updwn_8hr_ratio : %s       updwn_24hr_ratio : %s\n",
       DoubleToString(metrics.updwn_8hr_ratio, 2),
-      DoubleToString(metrics.updwn_24hr_ratio, 2),
+      DoubleToString(metrics.updwn_24hr_ratio, 2)
+      );
+   ratiosLine += StringFormat("       Max_N : %d       N_Buffer : %d       DD_Ratio : %s       DN_Ratio : %s\n",
       Max_N,
       N_Buffer,
       DoubleToString(metrics.dd_ratio, 2),
       DoubleToString(metrics.dn_ratio, 2)
       );
+   Dcomment += ratiosLine;
+
    Dcomment += "=====================\n";
 
    for(int c1=0; c1<NUM_LVLs; c1++)
      {
-      Dcomment += StringFormat(
+      string levelLine = StringFormat(
          "      H_peak[%d] : %s      Peak2_C[%d] : %s      HP_Time[%d] : %s      L_valley[%d] : %s      Valley2_C[%d] : %s      LV_Time[%d] : %s\n",
          c1,
          DoubleToString(H_peak[c1], _Digits),
@@ -979,15 +992,16 @@ void DisplayComment(int rates_total,
          c1,
          TimeToString(LV_Time[c1], TIME_DATE|TIME_MINUTES)
          );
+      Dcomment += levelLine;
      }
 
    Dcomment += "=====================\n";
 
-   for(int c2=0; c2<60*1; c2++)
+   for(int c2=0; c2<60; c2++)
      {
       if(c2 < rates_total && zzC[c2] > _Point)
         {
-         Dcomment += StringFormat(
+         string pointLine = StringFormat(
             "\nTime = %s   Counter : %d   zzH : %s   zzL : %s   zzC : %s   zzA : %s   Close : %s   Gap : %s",
             TimeToString(time[c2], TIME_SECONDS),
             c2,
@@ -998,8 +1012,10 @@ void DisplayComment(int rates_total,
             DoubleToString(close[c2], _Digits),
             DoubleToString((high[c2]-low[c2])/_Point, 0)
             );
+         Dcomment += pointLine;
         }
      }
+
    Dcomment += "\n=====================\n";
    Comment(Dcomment);
 
