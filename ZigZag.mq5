@@ -124,15 +124,17 @@ bool IsBufferEmpty(const double value)
 class CalculationGuard
   {
 private:
-   bool &m_flag;
+   bool *m_flag;
 public:
-   CalculationGuard(bool &flag):m_flag(flag)
+   explicit CalculationGuard(bool &flag)
      {
-      m_flag = true;
+      m_flag = &flag;
+      *m_flag = true;
      }
    ~CalculationGuard()
      {
-      m_flag = false;
+      if(m_flag)
+         *m_flag = false;
      }
   };
 
